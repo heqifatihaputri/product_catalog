@@ -6,33 +6,44 @@ import (
 	"product-catalog/middleware"
 	"product-catalog/models"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	// 1. Hubungkan ke Database PostgreSQL
+	// Hubungkan ke Database PostgreSQL
 	database.ConnectDB()
 
-	// 2. Migrasi otomatis tabel User dan Product
+	// Migrasi otomatis tabel User dan Product
 	database.DB.AutoMigrate(&models.User{}, &models.Product{})
 
-	// 3. Inisialisasi Gin Router
+	// Jalankan Seeder otomatis (seperti db/seeds.rb di Rails)
+	database.SeedData()
+
+	// Inisialisasi Gin Router
 	r := gin.Default()
+
+	// Mengaktifkan CORS (Cross-Origin Resource Sharing)
+	r.Use(cors.Default())
 
 	// --- ROUTE PUBLIK ---
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{"message": "pong! Server backend siap."})
 	})
 
-	// Endpoint Autentikasi
-	r.POST("/register", controllers.Register)
-	r.POST("/login", controllers.Login)
+	// Grup API Publik (Auth & Get Product)
+	api := r.Group("/api")
+	{
+		// Endpoint Autentikasi (sekarang jadi /api/login dan /api/register)
+		api.POST("/register", controllers.Register)
+		api.POST("/login", controllers.Login)
 
-	// Route Produk Publik (Contoh: Siapa saja boleh melihat daftar produk)
-	r.GET("/products", controllers.GetProducts)
-	r.GET("/products/:id", controllers.GetProductByID)
+		// Route Produk Publik
+		api.GET("/products", controllers.GetProducts)
+		api.GET("/products/:id", controllers.GetProductByID)
+	}
 
-	// --- ROUTE PROTECTED (Butuh Token JWT) ---
+	// --- ROUTE PROTECTED (Butuh Token JWT di bawah /api) ---
 	authRoutes := r.Group("/api")
 	authRoutes.Use(middleware.AuthMiddleware())
 	{
