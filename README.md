@@ -48,7 +48,7 @@ Make sure the following software is installed:
 ### 2. Clone the Repository
 
 ```bash
-git clone git@github.com:your-username/product-catalog.git
+git clone git@github.com:heqifatihaputri/product_catalog.git
 cd product-catalog
 ```
 
@@ -265,6 +265,11 @@ Add `.env` to `.gitignore`:
 **Validasi Input & Kategori Produk (Tema B):**
 
 - **Status:** Sebagian field sudah ada, tapi pastikan validasi backend membalikkan status code & pesan error yang sesuai jika input kosong. Tambahkan field kategori pada skema produk jika belum ada.
+
+**Environment Variables (.env Loader):**
+
+- **Status:** Backend saat ini belum membaca konfigurasi dari file `.env` (kredensial database seperti `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `DB_PORT`, serta `JWT_SECRET` masih statis/hardcoded di dalam kode).
+- **Solusi Sederhana:** Tambahkan package seperti `github.com/joho/godotenv` untuk memuat variabel konfigurasi database dan JWT Secret secara dinamis dari file `.env`.
 
 ## 🔑 Testing Credentials
 
