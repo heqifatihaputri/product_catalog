@@ -23,8 +23,14 @@ func main() {
 	// Inisialisasi Gin Router
 	r := gin.Default()
 
-	// Mengaktifkan CORS (Cross-Origin Resource Sharing)
-	r.Use(cors.Default())
+	// Mengaktifkan and Setup CORS (Cross-Origin Resource Sharing)RS Middleware
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173"},                   // Origin React Vite
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}, // Tambahkan OPTIONS
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"}, // Tambahkan Authorization
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+	}))
 
 	// --- ROUTE PUBLIK ---
 	r.GET("/ping", func(c *gin.Context) {
